@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DynCtrl Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>DynCtrl Dashboard</h1>
+                <div class="header-actions">
+                    <a href="https://lichess.org" target="_blank">
+                        <img src="icons/lichesslogo.png" alt="Lichess Logo" class="logo">
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Audio-Element für Fehlersound -->
+        <audio id="error-sound" src="sounds/errorsound.mp3" preload="auto"></audio>
+
+        <div class="main-actions">
+            <button id="fetch-all" class="main-button">Fetch All</button>
+            <div id="connection-error" class="error-message hidden">Connection Error: Check server and OBS</div>
+        </div>
+
+        <section id="server-connection">
+            <h2>Python Server Connection</h2>
+            <div class="input-row">
+                <div class="input-col">
+                    <label for="server-ip">IP Address:</label>
+                    <input type="text" id="server-ip" value="127.0.0.1" />
+                </div>
+                <div class="input-col">
+                    <label for="server-port">Port:</label>
+                    <input type="text" id="server-port" value="5000" />
+                </div>
+                <div class="button-col">
+                    <button id="connect-server">Connect</button>
+                </div>
+                <div class="status-col">
+                    <span id="server-status" class="status">Disconnected</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="broadcast-info">
+            <h2>Broadcast Information</h2>
+            <div id="current-broadcast">
+                <p>Broadcast URL: <span id="broadcast-url">-</span></p>
+                <p>Current Board: <span id="current-board">-</span>/<span id="total-boards">-</span></p>
+                <p>Current Turn: <span id="current-turn">-</span></p>
+            </div>
+            <div class="button-container">
+                <button id="fetch-games">Fetch Games from Lichess</button>
+            </div>
+        </section>
+
+        <section id="obs-connection">
+            <h2>OBS WebSocket Connection</h2>
+            <div class="input-row">
+                <div class="input-col">
+                    <label for="obs-ip">IP Address:</label>
+                    <input type="text" id="obs-ip" value="127.0.0.1" />
+                </div>
+                <div class="input-col">
+                    <label for="obs-port">Port:</label>
+                    <input type="text" id="obs-port" value="4455" />
+                </div>
+                <div class="button-col">
+                    <button id="connect-obs">Connect to OBS</button>
+                </div>
+                <div class="status-col">
+                    <span id="obs-status" class="status">Disconnected</span>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-col">
+                    <label for="obs-password">Password:</label>
+                    <input type="password" id="obs-password" />
+                </div>
+                <div class="button-col">
+                    <button id="refresh-scenes">Refresh Scenes</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="game-mapping">
+            <h2>Game to Scene Mapping</h2>
+            <div id="mapping-container">
+                <table id="mapping-table">
+                    <thead>
+                        <tr>
+                            <th>Board</th>
+                            <th>White Player</th>
+                            <th>Black Player</th>
+                            <th>White's Turn Scene</th>
+                            <th>Black's Turn Scene</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mapping-body">
+                        <!-- Will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="button-container">
+                <button id="export-mapping">Export</button>
+                <button id="import-mapping">Import</button>
+                <button id="reset-mapping">Reset All</button>
+                <input type="file" id="import-mapping-file" accept=".txt" style="display: none;">
+            </div>
+        </section>
+
+        <section id="status-log">
+            <h2>Status Log</h2>
+            <div id="log-container">
+                <pre id="log"></pre>
+            </div>
+            <div class="button-container">
+                <button id="clear-log">Clear Log</button>
+            </div>
+        </section>
+
+        <footer>
+            <a href="https://github.com/d1minik" target="_blank" class="dev-link">@d1minik</a>
+        </footer>
+    </div>
+
+    <script src="server-connector.js"></script>
+    <script src="lichess-api.js"></script>
+    <script src="obs-connector.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 

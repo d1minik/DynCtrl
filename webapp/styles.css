@@ -1,0 +1,385 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    padding: 20px;
+    min-height: 100vh;
+    background-image: 
+        /* radial-gradient(circle at 20% 30%, rgb(57, 57, 57) 0%, transparent 100%),
+        radial-gradient(circle at 80% 70%, rgba(61, 61, 61, 0.7) 0%, transparent 100%), */
+        linear-gradient(45deg, #000000 0%, #12131d 100%);
+    background-attachment: fixed;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    z-index: -1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: rgba(30, 30, 30, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    position: relative;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+header {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-button {
+    background-color: #a36e1a;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.header-button:hover {
+    background-color: #dd8800;
+}
+
+h1 {
+    color: #ffffff;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+}
+
+h2 {
+    color: #bbbbbb;
+    margin-bottom: 15px;
+}
+
+section {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: rgba(25, 25, 25, 0.4);
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    align-items: flex-end;
+}
+
+.input-col {
+    flex: 1;
+    min-width: 120px;
+}
+
+.button-col {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0;
+    margin-right: 0;
+}
+
+.status-col {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0;
+}
+
+.status-row {
+    margin-top: 10px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #cccccc;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 8px 12px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    width: 100%;
+    background-color: #333;
+    color: #ffffff;
+}
+
+button {
+    background-color: #a36e1a;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+button:hover {
+    background-color: #dd8800;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#server-status, #obs-status {
+    background-color: #3a2222;
+    color: #ff6666;
+}
+
+#server-status.connected, #obs-status.connected {
+    background-color: #1e3a1e;
+    color: #66ff66;
+}
+
+#mapping-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+th, td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #333;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(42, 42, 42, 0.3);
+}
+
+tr:nth-child(odd) {
+    background-color: rgba(37, 37, 37, 0.3);
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #333;
+    color: #ffffff;
+}
+
+option {
+    background-color: #333;
+    color: #ffffff;
+}
+
+#log-container {
+    background-color: #181818;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    height: 200px;
+    overflow-y: auto;
+}
+
+#log {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #ffffff;
+}
+
+.log-important {
+    color: #dd8800;
+    font-weight: bold;
+}
+
+footer {
+    margin-top: 20px;
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid #333;
+    position: relative;
+}
+
+.dev-link {
+    font-size: 12px;
+    color: #888;
+    text-decoration: none;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dev-link:hover {
+    color: #dd8800;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+#save-mapping {
+    float: none;
+}
+
+#game-mapping .button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+#current-board, #total-boards, #current-turn {
+    font-weight: bold;
+}
+
+#broadcast-url a {
+    color: #dd8800;
+    text-decoration: underline;
+}
+
+#broadcast-url a:hover {
+    color: #ffffff;
+}
+
+#obs-password {
+    width: 100%;
+}
+
+/* Remove this rule that was causing problems */
+.input-row:has(#obs-password) .input-col {
+    flex: 1; /* Match the same flex as other input columns */
+}
+
+.main-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.error-message {
+    color: #ffffff;
+    background-color: #e53935;
+    padding: 0.7rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    flex-grow: 1;
+    margin-left: 1rem;
+    text-align: left;
+}
+
+.hidden {
+    display: none;
+}
+
+.main-button {
+    background-color: #a36e1a;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.main-button:hover {
+    background-color: #dd8800;
+}
+
+/* Copy button styling */
+.copy-button {
+    padding: 4px 10px;
+    font-size: 0.9em;
+    background-color: #575757;
+    min-width: 60px;
+}
+
+.copy-button:hover {
+    background-color: #707070;
+}
+
+/* Export/Import buttons styling */
+#export-mapping, #import-mapping, #clear-log, #reset-mapping {
+    background-color: #3a5a70;
+}
+
+#export-mapping:hover, #import-mapping:hover, #clear-log:hover, #reset-mapping:hover {
+    background-color: #4a7090;
+}
+
+/* Reset the margin-left since we're using gap in the container */
+#export-mapping, #import-mapping, #clear-log, #reset-mapping {
+    margin-left: 0;
+}
+
+/* Keep the Reset All button with its original color */
+#reset-mapping {
+    background-color: #a36e1a;
+}
+
+#reset-mapping:hover {
+    background-color: #dd8800;
+} 
