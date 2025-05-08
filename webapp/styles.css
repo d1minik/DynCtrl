@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Space Mono', monospace;
     line-height: 1.6;
     background-color: #1a1a1a;
     color: #e0e0e0;
@@ -240,7 +240,7 @@ option {
 }
 
 #log {
-    font-family: monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.9em;
     color: #ffffff;
 }

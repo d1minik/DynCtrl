@@ -769,7 +769,7 @@ class ChessOBSController {
     handleServerUpdate(data) {
         // Update display with information from the server
         this.currentBroadcastUrl = data.broadcastUrl || '';
-        this.currentBoard = (typeof data.boardNumber === 'number' ? data.boardNumber + 1 : (parseInt(data.boardNumber, 10) || 1));
+        this.currentBoard = (typeof data.boardNumber === 'number' ? data.boardNumber : (parseInt(data.boardNumber, 10) || 1));
         this.totalBoards = data.totalBoards || 0;
         this.currentTurn = data.turn || '';
 
