@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <canvas id="bg-dots" width="400" height="400" style="display:none;"></canvas>
     <div class="container">
         <header>
             <div class="header-content">
@@ -130,7 +131,7 @@
         </section>
 
         <footer>
-            <a href="https://github.com/d1minik" target="_blank" class="dev-link">@d1minik</a>
+            <a href="https://github.com/d1minik" target="_blank" class="dev-link" style="font-family: Arial, sans-serif;">@d1minik</a>
         </footer>
     </div>
 
@@ -138,5 +139,32 @@
     <script src="lichess-api.js"></script>
     <script src="obs-connector.js"></script>
     <script src="app.js"></script>
+    <script>
+    (function() {
+        const canvas = document.getElementById('bg-dots');
+        const ctx = canvas.getContext('2d');
+        const size = 400; // Größe des Musters
+        const spacing = 16; // Abstand zwischen Punkten
+        const minAlpha = 0.1, maxAlpha = 0.7;
+
+        ctx.clearRect(0, 0, size, size);
+
+        for (let y = spacing/2; y < size; y += spacing) {
+            for (let x = spacing/2; x < size; x += spacing) {
+                // Zufällige Helligkeit (Alpha) und leichte Farbvariation
+                const alpha = Math.random() * (maxAlpha - minAlpha) + minAlpha;
+                const gold = 110 + Math.floor(Math.random() * 60); // 110-170 für goldenen Farbton
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgba(${gold},${Math.floor(gold*0.7)},0,${alpha})`; // Gold/Orange Ton
+                ctx.fill();
+            }
+        }
+
+        // Setze das Canvas als Hintergrundbild
+        document.body.style.backgroundImage =
+            `url('${canvas.toDataURL()}'), linear-gradient(45deg, #000000 0%, #12131d 100%)`;
+    })();
+    </script>
 </body>
 </html> 

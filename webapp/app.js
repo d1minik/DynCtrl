@@ -69,7 +69,7 @@ class ChessOBSController {
         // Check for OBS connection issues
         if (!obsConnector.connected && !this.manualDisconnect.obs) {
             hasError = true;
-            errorMessage += hasError ? ' and OBS connection lost' : 'OBS connection lost';
+            errorMessage += errorMessage.includes('Python Server') ? ' and OBS connection lost' : 'OBS connection lost';
         }
         
         // Toggle error visibility

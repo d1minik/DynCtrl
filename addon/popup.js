@@ -44,18 +44,29 @@ function update() {
             }
         }
         
-        // Only update if the fields are not in focus
+        // Update IP and Port fields if they're not in focus
         if (info.target) {
             const [ip, port] = (info.target || '').split(':');
             
             const ipAddressElement = document.getElementById('ipAddress');
             if (ipAddressElement && !ipAddressFieldHasFocus) {
-                ipAddressElement.value = ip || '';
+                ipAddressElement.value = ip || '127.0.0.1';
             }
             
             const portElement = document.getElementById('port');
             if (portElement && !portFieldHasFocus) {
-                portElement.value = port || '';
+                portElement.value = port || '5000';
+            }
+        } else {
+            // If no target is set, show default values
+            const ipAddressElement = document.getElementById('ipAddress');
+            if (ipAddressElement && !ipAddressFieldHasFocus) {
+                ipAddressElement.value = '127.0.0.1';
+            }
+            
+            const portElement = document.getElementById('port');
+            if (portElement && !portFieldHasFocus) {
+                portElement.value = '5000';
             }
         }
     });
@@ -94,8 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('save');
     if (saveButton) {
         saveButton.onclick = () => {
-            const ipAddress = document.getElementById('ipAddress').value;
-            const port = document.getElementById('port').value;
+            let ipAddress = document.getElementById('ipAddress').value.trim();
+            let port = document.getElementById('port').value.trim();
+            
+            // Set default values if empty
+            if (!ipAddress) ipAddress = '127.0.0.1';
+            if (!port) port = '5000';
+            
             const target = `${ipAddress}:${port}`;
             
             console.log("Popup: Setting target to", target);

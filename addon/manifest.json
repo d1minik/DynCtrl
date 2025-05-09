@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Lichess Broadcast Brett-Tracker",
+    "name": "DynCtrl Extension",
     "version": "1.0",
-    "description": "Sends current board number, total number of boards, and turn color to a local python server.",
+    "description": "Sends several information about a broadcast being watched to a local python server. More info: https://github.com/d1minik/DynCtrlLite",
     "permissions": ["storage", "scripting", "activeTab"],
     "host_permissions": ["https://lichess.org/broadcast/*"],
     "background": {
