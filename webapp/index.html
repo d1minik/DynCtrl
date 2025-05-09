@@ -52,6 +52,26 @@
             </div>
         </section>
 
+        <section id="presence-connection">
+            <h2>Presence Detection Server Connection</h2>
+            <div class="input-row">
+                <div class="input-col">
+                    <label for="presence-ip">IP Address:</label>
+                    <input type="text" id="presence-ip" value="127.0.0.1" />
+                </div>
+                <div class="input-col">
+                    <label for="presence-port">Port:</label>
+                    <input type="text" id="presence-port" value="5001" />
+                </div>
+                <div class="button-col">
+                    <button id="connect-presence">Connect</button>
+                </div>
+                <div class="status-col">
+                    <span id="presence-status" class="status">Disconnected</span>
+                </div>
+            </div>
+        </section>
+
         <section id="broadcast-info">
             <h2>Broadcast Information</h2>
             <div id="current-broadcast">
@@ -100,14 +120,15 @@
                     <thead>
                         <tr>
                             <th>Board</th>
-                            <th>White Player</th>
+                            <th>Black Scene</th>
+                            <th>Black Presence</th>
+                            <th>White Scene</th>
+                            <th>White Presence</th>
                             <th>Black Player</th>
-                            <th>White's Turn Scene</th>
-                            <th>Black's Turn Scene</th>
-                            <th>Actions</th>
+                            <th>White Player</th>
                         </tr>
                     </thead>
-                    <tbody id="mapping-body">
+                    <tbody>
                         <!-- Will be populated dynamically -->
                     </tbody>
                 </table>
@@ -136,6 +157,7 @@
     </div>
 
     <script src="server-connector.js"></script>
+    <script src="presence-connector.js"></script>
     <script src="lichess-api.js"></script>
     <script src="obs-connector.js"></script>
     <script src="app.js"></script>

@@ -9,6 +9,9 @@ latest_board_info = {
     "turn": ""
 }
 
+# Store presence detection data
+presence_data = {}
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         # Handle different paths
@@ -19,6 +22,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps(latest_board_info).encode())
+        elif self.path == '/presence':
+            # Return the latest presence data as JSON
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(presence_data).encode())
         else:
             # Default response for root
             self.send_response(200)
@@ -35,7 +45,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        global latest_board_info
+        global latest_board_info, presence_data
         
         print("--------------------------------")
         print("POST request received")  # Debugging
@@ -43,19 +53,26 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         print("Raw POST data:", post_data)  # Debugging
         try:
-            board_info = json.loads(post_data)
-            print("Parsed board info:", board_info)  # Debugging
+            data = json.loads(post_data)
+            print("Parsed data:", data)  # Debugging
             
-            # Update the latest board info
-            latest_board_info = {
-                "broadcastUrl": board_info.get('broadcastUrl', ''),
-                "boardNumber": board_info.get('boardNumber', ''),
-                "totalBoards": board_info.get('totalBoards', ''),
-                "turn": board_info.get('turn', '')
-            }
-            
-            # Print a summary
-            print(f"\nbroadcast: {latest_board_info['broadcastUrl']} \nboard: {latest_board_info['boardNumber']}/{latest_board_info['totalBoards']} | turn: {latest_board_info['turn']}\n")
+            if self.path == '/presence':
+                # Handle presence detection data
+                presence_data[data['ndi_name']] = {
+                    "index": data['index'],
+                    "player_present": data['player_present']
+                }
+                print(f"Updated presence data for {data['ndi_name']}: {data['player_present']}")
+            else:
+                # Handle board information
+                latest_board_info = {
+                    "broadcastUrl": data.get('broadcastUrl', ''),
+                    "boardNumber": data.get('boardNumber', ''),
+                    "totalBoards": data.get('totalBoards', ''),
+                    "turn": data.get('turn', '')
+                }
+                # Print a summary
+                print(f"\nbroadcast: {latest_board_info['broadcastUrl']} \nboard: {latest_board_info['boardNumber']}/{latest_board_info['totalBoards']} | turn: {latest_board_info['turn']}\n")
             
             self.send_response(200)
             self.send_header("Content-type", "application/json")

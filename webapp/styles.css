@@ -382,4 +382,54 @@ footer {
 
 #reset-mapping:hover {
     background-color: #dd8800;
+}
+
+/* Presence status styles */
+.present {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.not-present {
+    color: #f44336;
+    font-weight: bold;
+}
+
+/* Update table styles for presence columns */
+#mapping-table td {
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#mapping-table th {
+    padding: 12px 8px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Presence connection section */
+#presence-connection {
+    background-color: rgba(25, 25, 25, 0.4);
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px;
+    margin-bottom: 30px;
+}
+
+#presence-connection h2 {
+    color: #bbbbbb;
+    margin-bottom: 15px;
+}
+
+#presence-status {
+    background-color: #3a2222;
+    color: #ff6666;
+}
+
+#presence-status.connected {
+    background-color: #1e3a1e;
+    color: #66ff66;
 } 

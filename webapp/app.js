@@ -11,8 +11,10 @@ class ChessOBSController {
         this.warnedScenes = new Set();
         this.manualDisconnect = {
             server: false,
-            obs: false
+            obs: false,
+            presence: false
         };
+        this.presenceData = new Map();
     }
 
     init() {
@@ -22,6 +24,7 @@ class ChessOBSController {
         // Set up event listeners
         document.getElementById('connect-server').addEventListener('click', this.connectToServer.bind(this));
         document.getElementById('connect-obs').addEventListener('click', this.connectToOBS.bind(this));
+        document.getElementById('connect-presence').addEventListener('click', this.connectToPresenceServer.bind(this));
         document.getElementById('fetch-games').addEventListener('click', this.fetchGamesFromLichess.bind(this));
         document.getElementById('reset-mapping').addEventListener('click', this.resetMappingConfig.bind(this));
         document.getElementById('clear-log').addEventListener('click', this.clearLog.bind(this));
@@ -37,6 +40,8 @@ class ChessOBSController {
         serverConnector.setUpdateCallback(this.handleServerUpdate.bind(this));
         serverConnector.setConnectionChangedCallback(this.handleServerConnectionChange.bind(this));
         obsConnector.setConnectionChangedCallback(this.handleOBSConnectionChange.bind(this));
+        presenceConnector.setUpdateCallback(this.handlePresenceUpdate.bind(this));
+        presenceConnector.setConnectionChangedCallback(this.handlePresenceConnectionChange.bind(this));
         
         this.log('Application initialized');
         
@@ -71,13 +76,20 @@ class ChessOBSController {
             hasError = true;
             errorMessage += errorMessage.includes('Python Server') ? ' and OBS connection lost' : 'OBS connection lost';
         }
+
+        // Check for presence server connection issues
+        if (!presenceConnector.connected && !this.manualDisconnect.presence) {
+            hasError = true;
+            errorMessage += errorMessage.includes('Python Server') || errorMessage.includes('OBS') ? 
+                ' and Presence Server connection lost' : 'Presence Server connection lost';
+        }
         
         // Toggle error visibility
         if (hasError) {
             errorElement.textContent = errorMessage;
             errorElement.classList.remove('hidden');
             
-            // Spiele Fehlersound ab, aber nur wenn die Meldung neu erscheint
+            // Play error sound only if the message is new
             if (wasHidden && errorSound) {
                 errorSound.currentTime = 0;
                 errorSound.play().catch(e => {
@@ -87,6 +99,111 @@ class ChessOBSController {
         } else {
             errorElement.classList.add('hidden');
         }
+    }
+
+    // Presence server connection
+    async connectToPresenceServer() {
+        // Get references
+        const presenceIp = document.getElementById('presence-ip').value;
+        const presencePort = document.getElementById('presence-port').value;
+        const presenceUrl = `http://${presenceIp}:${presencePort}`;
+        const presenceStatus = document.getElementById('presence-status');
+        const connectButton = document.getElementById('connect-presence');
+        
+        // Check if we're already connected
+        if (presenceConnector.connected) {
+            // Disconnect action
+            this.manualDisconnect.presence = true;
+            presenceConnector.disconnect();
+            presenceStatus.textContent = 'Disconnected';
+            presenceStatus.classList.remove('connected');
+            connectButton.textContent = 'Connect';
+            this.log('Disconnected from Presence server', true);
+            this.updateConnectionStatus();
+            return;
+        }
+        
+        // Connect action
+        try {
+            presenceStatus.textContent = 'Connecting...';
+            this.log('Connecting to Presence server...', true);
+            
+            this.manualDisconnect.presence = false;
+            presenceConnector.connect(presenceUrl)
+                .then(connected => {
+                    if (connected) {
+                        presenceStatus.textContent = 'Connected';
+                        presenceStatus.classList.add('connected');
+                        connectButton.textContent = 'Disconnect';
+                        this.log('Connected to Presence server successfully', true);
+                    } else {
+                        presenceStatus.textContent = 'Connection Failed';
+                        presenceStatus.classList.remove('connected');
+                        connectButton.textContent = 'Connect';
+                        this.log('Failed to connect to Presence server', true);
+                    }
+                    this.updateConnectionStatus();
+                });
+        } catch (error) {
+            this.log(`Presence server connection error: ${error.message}`, true);
+            presenceStatus.textContent = 'Connection Failed';
+            presenceStatus.classList.remove('connected');
+            connectButton.textContent = 'Connect';
+            this.updateConnectionStatus();
+        }
+    }
+
+    // Handle presence server connection status change
+    handlePresenceConnectionChange(connected) {
+        const presenceStatus = document.getElementById('presence-status');
+        const connectButton = document.getElementById('connect-presence');
+        
+        if (connected) {
+            presenceStatus.textContent = 'Connected';
+            presenceStatus.classList.add('connected');
+            connectButton.textContent = 'Disconnect';
+            this.log('Connection established with Presence server', true);
+        } else if (!this.manualDisconnect.presence) {
+            // Only update if it wasn't a manual disconnect
+            presenceStatus.textContent = 'Disconnected';
+            presenceStatus.classList.remove('connected');
+            connectButton.textContent = 'Connect';
+            this.log('Lost connection to Presence server', true);
+        }
+        
+        this.updateConnectionStatus();
+    }
+
+    // Handle presence data updates
+    handlePresenceUpdate(data) {
+        // Update presence data map
+        this.presenceData = new Map(Object.entries(data));
+        
+        // Update the UI for all mapped scenes
+        this.boardSceneMapping.forEach((mapping, boardNumber) => {
+            const blackScene = mapping.blackScene;
+            const whiteScene = mapping.whiteScene;
+            
+            // Update black player presence
+            if (blackScene && blackScene.ndiSource) {
+                const blackPresence = this.presenceData.get(blackScene.ndiSource);
+                const blackPresenceCell = document.getElementById(`black-presence-${boardNumber}`);
+                if (blackPresenceCell) {
+                    blackPresenceCell.textContent = blackPresence?.player_present ? 'Present' : 'Not Present';
+                    blackPresenceCell.className = blackPresence?.player_present ? 'present' : 'not-present';
+                }
+            }
+            
+            // Update white player presence
+            if (whiteScene && whiteScene.ndiSource) {
+                const whitePresence = this.presenceData.get(whiteScene.ndiSource);
+                const whitePresenceCell = document.getElementById(`white-presence-${boardNumber}`);
+                if (whitePresenceCell) {
+                    whitePresenceCell.textContent = whitePresence?.player_present ? 'Present' : 'Not Present';
+                    whitePresenceCell.className = whitePresence?.player_present ? 'present' : 'not-present';
+                }
+            }
+        });
     }
 
     // Server connection
@@ -230,66 +347,69 @@ class ChessOBSController {
     // Get scenes and populate selects
     async getAndPopulateScenes() {
         try {
-            await obsConnector.getScenes();
-            this.populateSceneSelects();
-            this.populateTestSceneSelect();
+            const scenes = await obsConnector.getScenes();
+            const sceneSelects = document.querySelectorAll('.scene-select');
+            
+            // Clear existing options
+            sceneSelects.forEach(select => {
+                select.innerHTML = '<option value="">Select Scene</option>';
+            });
+            
+            // Add new options
+            scenes.forEach(scene => {
+                const option = document.createElement('option');
+                option.value = scene.sceneName;
+                option.textContent = scene.sceneName;
+                sceneSelects.forEach(select => {
+                    select.appendChild(option.cloneNode(true));
+                });
+            });
+            
+            // Get NDI source information for each scene
+            for (const scene of scenes) {
+                const sources = await obsConnector.getSceneSources(scene.sceneName);
+                const ndiSource = sources.find(source => source.sourceKind === 'ndi_source');
+                if (ndiSource) {
+                    scene.ndiSource = ndiSource.sourceName;
+                }
+            }
+            
+            this.log('Scenes populated successfully');
         } catch (error) {
-            this.log(`Failed to get scenes: ${error.message}`, true);
+            this.log(`Error populating scenes: ${error.message}`, true);
         }
     }
 
     // Populate the game mapping table
     populateGamesMapping(games) {
-        const tableBody = document.getElementById('mapping-body');
-        tableBody.innerHTML = ''; // Clear existing rows
-
+        const mappingTable = document.getElementById('mapping-table');
+        const tbody = mappingTable.querySelector('tbody');
+        tbody.innerHTML = '';
+        
         games.forEach(game => {
             const row = document.createElement('tr');
-            
-            // Board number cell
-            const boardCell = document.createElement('td');
-            boardCell.textContent = game.boardNumber;
-            row.appendChild(boardCell);
-            
-            // White player cell
-            const whitePlayerCell = document.createElement('td');
-            whitePlayerCell.textContent = game.players.white;
-            row.appendChild(whitePlayerCell);
-            
-            // Black player cell
-            const blackPlayerCell = document.createElement('td');
-            blackPlayerCell.textContent = game.players.black;
-            row.appendChild(blackPlayerCell);
-            
-            // White's turn scene select
-            const whiteTurnCell = document.createElement('td');
-            const whiteSelect = this.createSceneSelect(`white-${game.boardNumber}`);
-            whiteTurnCell.appendChild(whiteSelect);
-            row.appendChild(whiteTurnCell);
-            
-            // Black's turn scene select
-            const blackTurnCell = document.createElement('td');
-            const blackSelect = this.createSceneSelect(`black-${game.boardNumber}`);
-            blackTurnCell.appendChild(blackSelect);
-            row.appendChild(blackTurnCell);
-            
-            // Copy button cell
-            const actionCell = document.createElement('td');
-            const copyButton = document.createElement('button');
-            copyButton.textContent = 'Copy';
-            copyButton.className = 'copy-button';
-            copyButton.setAttribute('data-board', game.boardNumber);
-            copyButton.addEventListener('click', () => {
-                this.copySceneSelection(game.boardNumber);
-            });
-            actionCell.appendChild(copyButton);
-            row.appendChild(actionCell);
-            
-            tableBody.appendChild(row);
+            row.innerHTML = `
+                <td>${game.boardNumber}</td>
+                <td>
+                    <select class="scene-select" id="black-scene-${game.boardNumber}" data-board="${game.boardNumber}" data-color="black">
+                        <option value="">Select Scene</option>
+                    </select>
+                </td>
+                <td id="black-presence-${game.boardNumber}" class="not-present">Not Present</td>
+                <td>
+                    <select class="scene-select" id="white-scene-${game.boardNumber}" data-board="${game.boardNumber}" data-color="white">
+                        <option value="">Select Scene</option>
+                    </select>
+                </td>
+                <td id="white-presence-${game.boardNumber}" class="not-present">Not Present</td>
+                <td>${game.blackPlayer}</td>
+                <td>${game.whitePlayer}</td>
+            `;
+            tbody.appendChild(row);
         });
-
-        // Populate any saved mappings
-        this.loadSavedMappings();
+        
+        // Populate scene selects
+        this.populateSceneSelects();
     }
 
     // Create a select element for scene selection
